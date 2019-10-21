@@ -195,6 +195,7 @@ $ sudo systemctl daemon-reload
 $ sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-address=10.138.0.3
 # --apiserver-advertise-address master的IP地址，指定与其它节点通信的接口
 ```
+
 --apiserver-advertise-address 指明用Master的哪个interface与Cluster的其他节点通信，如果Master有多个interface，建议明确指定，如果不指定，kubeadm 会自动选择有默认网关的interface。
 
 --pod-network-cidr 指定Pod网络的范围。Kubernetes 支持多种网络方案，而且不同网络方案对--pod-network-cidr 有自己的要求，这里设置为10.244.0.0/16 是因为将使用flannel网络方案，必须设置成这个CIDR。
@@ -202,7 +203,7 @@ $ sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-advertise-addre
 拉取集群所需镜像的过程涉及翻墙，默认访问谷歌的服务器
 不能翻墙的话，可以尝试以下办法：下载我导出的镜像包，[镜像网盘链接](https://pan.baidu.com/s/1YCO-8AEfqqYzAWsx9mUpTQ&shfl=sharepset)，解压缩以后是多个tar包，使用`docker load< xxxx.tar `导入各个文件即可。
 
-执行过程：
+**执行过程：**
 1. kubeadm 执行初始化前的检查
 2. 生成token和证书
 3. 生成KubeConfig文件，kubelet需要用这个文件与Master通信
@@ -254,9 +255,11 @@ sudo kubeadm join 10.138.0.34:6443 --token 2eq3f7.aiwd0iqtqtjsthte \
     --discovery-token-ca-cert-hash sha256:4b68a6f74b2ade2d58d9bdf4b43269aee27b78bb0f12d524ee1d4eaaebf5ce08
 ```
 输出日志
+
 ![enter description here](/images/node1.png)
 
 master:
+
 ![enter description here](./images/getNodes.png)
 
 ### 将Master作为工作节点
@@ -272,6 +275,7 @@ $ kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
 如果要恢复Master Only的状态，执行：
+
 `kubectl taint node lhm-cluster-test-m node-role.kubernetes.io/master="":NoSchedule`
 
 
