@@ -1,19 +1,22 @@
-## Kubernetes是什么
+## 1 Kubernetes是什么
+
 * k8s是Google开源的容器集群管理系统
 * 用于容器化应用程序的部署、扩展和管理
 * k8s 目标是管理跨多个主机的容器，让部署容器化应用简单高效
 * K8S在Docker容器技术的基础之上，大大地提高了容器化部署应用简单高效。并且具备了完整的集群管理能力，例如服务发现、资源调度、部署管理、缩容扩容、动态更新、持久化存储、监控、日志等，涵盖项目周期的各个环节。
 
-## Docker 与Kubernetes 的联系
+## 2 Docker 与Kubernetes 的联系
+
 说到这里，就涉及到容器云平台核心组成了。
 
 Docker是一个容器引擎，用于运行容器，Kubernetes是一个容器编排系统，不具备容器引擎功能，相比Docker是一个更高级封装，而他们在一起堪称珠联璧合，一起搞大事！如图：
 ![enter description here](/images/Kubernetes与Docker的联系.png)
 
 
-## Kubernetes核心概念
-### Kubernetes架构及相关组件
-#### Kubernetes 架构
+## 3 Kubernetes核心概念
+### 3.1 Kubernetes架构及相关组件
+#### 3.1.1 Kubernetes 架构
+
 ![enter description here](/images/Kubernetes架构.png)
 
 **Master** 负责管理集群, master 协调集群中的所有活动，例如调度应用程序、维护应用程序的所需状态、扩展应用程序和滚动更新。
@@ -22,7 +25,8 @@ Docker是一个容器引擎，用于运行容器，Kubernetes是一个容器编�
 
 Master 管理集群，而 节点 用于托管正在运行的应用程序。
 
-#### Kubernetes系统组件
+#### 3.1.2 Kubernetes系统组件
+
 ![enter description here](/images/Kubernetes系统组件.png)
 - **Master组件：**
   - **API Server** ：
@@ -53,18 +57,29 @@ Master 管理集群，而 节点 用于托管正在运行的应用程序。
   - **container runtime**：
     负责镜像管理以及容器的真正执行(CRI)。
 
-### 基本对象概念
+### 3.2 基本对象概念
+
 ![enter description here](/images/Kubernetes概览.png)
 
-#### Pod
+#### 3.2.1 Pod
+
 * 是一组相关联的容器集合，由一个或多个容器组成
 * 是Kubernetes调度的最小部署单元
 * Pod中容器 共享 同一个网络命名空间，IP地址和端口空间
+* Kubernetes集群中，同宿主机的或不同宿主机的Pod之间要求能够TCP/IP直接通信，因此采用虚拟二层网络技术来实现，例如Flannel，Openvswitch(OVS)等，这样在同个集群中，不同的宿主机的Pod IP为不同IP段的IP，集群中的所有Pod IP都是唯一的，不同Pod之间可以直接通信。
+* Pod有两种类型：普通Pod和静态Pod。静态Pod即不通过K8S调度和创建，直接在某个具体的Node机器上通过具体的文件来启动。普通Pod则是由K8S创建、调度，同时数据存放在ETCD中。
+* Pod IP和具体的容器端口（ContainnerPort）组成一个具体的通信地址，即Endpoint。一个Pod中可以存在多个容器，可以有多个端口，Pod IP一样，即有多个Endpoint。
+* Pod Volume是定义在Pod之上，被各个容器挂载到自己的文件系统中，可以用分布式文件系统实现后端存储功能。
+* Pod中的Event事件可以用来排查问题，可以通过kubectl describe pod xxx 来查看对应的事件。
+* 每个Pod可以对其能使用的服务器上的计算资源设置限额，一般为CPU和Memory。
+  * Requests:该资源的最小申请量，系统必须满足要求。
+  * Limits:该资源最大允许使用量，当超过该量，K8S会kill并重启Pod。
 * Pod是短暂的而不是长久的应用。Pods被调度到节点，保持在这个节点上直到被销毁。
 
 ![enter description here](/images/Pod.png)
 
-#### Label
+#### 3.2.2 Label
+
 * 是识别Kubernetes对象的标签，以key/value 的方式附加到对象上，用于区分对象
 * Label 不提供唯一性，并且实际上经常是很多对象(如Pods)都使用相同的 label 来标志具体的应用
 * 使用 Label Selector 来选择一组相同 label 的对象
@@ -73,7 +88,8 @@ Master 管理集群，而 节点 用于托管正在运行的应用程序。
   * 集合，如env in (production, qa)
   * 多个label(AND关系)，如app=nginx,env=test
 
-#### Service
+#### 3.2.3 Service
+
 * 是应用服务的抽象，定义了Pod逻辑集合和访问这个Pod集合的策略，定义了服务的访问入口
 * Service代理Pod集合对外表现是为一个访问入口，分配一个集群IP地址，来自这个IP的请求将负载均衡转发后端Pod中的容器。
 * Service通过LableSelector选择一组Pod提供服务。
@@ -82,23 +98,28 @@ Master 管理集群，而 节点 用于托管正在运行的应用程序。
 
 ![enter description here](/images/Service.png)
 
-#### Volume
+#### 3.2.4 Volume
+
 * 数据卷，共享Pod中容器使用的数据
 
-#### Namespace
+#### 3.2.5 Namespace
+
 * 命名空间，将对象逻辑上隔离
 * Namespace 是对一组资源和对象的抽象集合，将对象逻辑上分配到不同的Namespace，比如可以用来将系统内部的对象划分为不同的项目组或用户组，并设定控制策略，从而实现多租户。
 * 命名空间也称为虚拟集群。
 * 常见的 pods, services,deployments 等都是属于某一个 namespace 的(默认是default)，而 Node, PersistentVolumes 等则不属于任何 namespace。
   
-#### Controller
+#### 3.2.6 Controller
+
 * Kubernetes通常不会直接创建Pod，而是通过Controller来管理Pod的，Controller中定义了Pod的部署特性，比如有几个副本、在什么样的Node上运行等。为了满足不同的业务场景，Kubernetes提供了多种Controller，包括Deployment、ReplicaSet、DaemonSet、StatefulSet、Job等。
 
-#### ReplicaSet
+#### 3.2.7 ReplicaSet
+
 * 是 Pod 副本的抽象，用于解决 Pod 的扩容和伸缩，并提供声明式更新等功能。
 * 下一代ReplicationController，RC与RS唯一区别就是lableselector支持不同，RS支持新的基于集合的标签，RC仅支持基于等式的标签。
 
-#### Deployment
+#### 3.2.8 Deployment
+
 * 无状态工作负载
 * 管理ReplicaSets和Pod
 * Deployment集成了上线部署、滚动升级、创建副本、暂停上线任务、恢复上线任务、回滚到以前某一版本(成功/稳定)的Deployment等功能，在某种程度上，Deployment 可以帮助我们实现无人值守的上线，大大降低我们的上线过程的复杂沟通、操作风险；
@@ -110,7 +131,8 @@ Master 管理集群，而 节点 用于托管正在运行的应用程序。
 * Service 通过 Label Selector 同后端的 Pod 副本建立关系，Deployment 保证后端Pod 副本的数量，也就是保证服务的伸缩性。 
 * 官方建议使用Deployment管理ReplicaSets，而不是直接使用ReplicaSets。
 
-#### StatefulSet
+#### 3.2.9 StatefulSet
+
 * 有状态应用，用于解决各个pod实例独立生命周期管理，提供各个实例的启动顺序和唯一性
 * StatefulSet 能够保证Pod的每个副本在整个生命周期中名称是不变的，而其他Controller不提供这个功能。
 * StatefulSet适合持久性的应用程序，有唯一的网络标识符(IP)，持久存储，有序的部署、扩展、删除和滚动更新。
@@ -118,7 +140,8 @@ Master 管理集群，而 节点 用于托管正在运行的应用程序。
 
 ![enter description here](/images/StatefulSet.png)
 
-#### DaemonSet
+#### 3.2.10 DaemonSet
+
 * DaemonSet能够让所有(或一些)节点运行同一个Pod。当节点加入Kubernetes集群中，Pod会被(DaemonSet)调度到该节点上运行，当节点从Kubernetes集群中移除时，被DaemonSet调度的Pod会被删除。删除DaemonSet会清理它所有相关的Pod。
 * 在使用Kubernetes来运行应用时，很多时候我们需要在一个区域(zone)或者所有Node上运行同一个守护进程(pod)，例如以下场景：
   * 每个Node上运行一个分布式存储的守护进程，例如glusterd，ceph
@@ -127,13 +150,15 @@ Master 管理集群，而 节点 用于托管正在运行的应用程序。
 
 ![enter description here](/images/DaemonSet.png)
 
-#### Job
+#### 3.2.11 Job
+
 * 用于运行结束就删除的应用，而其他Controller中的Pod通常是长期持续运行的
 * 一次性任务，运行完成后Pod销毁，不再重新启动新容器
 * 分位普通任务(Job)和定时任务(CronJob)
 
 
-### 组件通信 
+### 3.3 组件通信 
+
 Kubernetes 多组件之间的通信原理：
 * apiserver 负责 etcd 存储的所有操作，且只有 apiserver 才直接操作 etcd 集群
 * apiserver 对内（集群中的其他组件）和对外（用户）提供统一的 REST API，其他组件均通过 apiserver 进行通信
@@ -141,7 +166,8 @@ Kubernetes 多组件之间的通信原理：
   * 所有需要更新资源状态的操作均通过 apiserver 的 REST API 进行
 * apiserver 也会直接调用 kubelet API（如 logs, exec, attach 等），默认不校验 kubelet 证书，但可以通过 --kubelet-certificate-authority 开启（而 GKE 通过 SSH 隧道保护它们之间的通信）
 
-#### 创建Pod的流程
+#### 3.3.1 创建Pod的流程
+
 ![enter description here](/images/创建Pod的流程.png)
 
 1. 用户通过 REST API 创建一个 Pod
