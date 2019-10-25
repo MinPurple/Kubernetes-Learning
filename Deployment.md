@@ -326,7 +326,7 @@ Kubernetes 可以通过label来实现这个功能。
 4. 查看Pod，可以看到全部副本都运行在Node1上，符合预期。
 5. 要删除 label disktype，执行
    `kubectl lable node lhm-cluster-test-w-0 disktype-`
-   不过此时Pod 依然不会重新部署，仍在Node1 上运行，除非在yaml文件中删除nodeSelector设置，并通过kubectl apply -f 重新部署。
+   不过此时Pod 依然不会重新部署，仍在Node1 上运行，除非在yaml文件中删除nodeSelector设置，并通过`kubectl apply -f `重新部署。
 
 ### 参考：
 

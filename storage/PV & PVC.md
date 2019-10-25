@@ -104,7 +104,7 @@ PVC只需要指定PV的容量、访问模式和class即可。
 
 PVC可以不指定storageClassName，或者将该值设置为空，如果打开了准入控制插件，并且指定一个默认的 StorageClass，则PVC会使用默认的StorageClass，否则就绑定到没有StorageClass的 PV上。
 
-## 1.3 使用PVC 作为 Column
+## 1.3 使用PVC 作为 Volumn
 
 将PVC作为Pod的Volume，PVC与Pod需要在同一个命名空间下，Pod的声明如下：
 
