@@ -34,6 +34,16 @@
 * [Secret](security/secret.md)
 * [ConfigMap](security/ConfigMap.md)
 
+## Health Check
+
+* [健康检查](Health&#32;Check/健康检查.md)
+* [Liveness](Health&#32;Check/Liveness.md)
+* [Readiness](Health&#32;Check/Readiness.md)
+* [Liveness&Readiness比较](Health&#32;Check/Liveness&Readiness比较.md)
+* [Health Check在Scale Up中的应用](Health&#32;Check/Health&#32;Check在Scale&#32;Up中的应用.md)
+* [Health Check在滚动更新中的应用](Health&#32;Check/Health&#32;Check在滚动更新中的应用.md)
+
+
 ## Helm 
 
 * [Why Helm](Helm/Why&#32;Helm.md)
@@ -41,3 +51,4 @@
 * [Helm安装](Helm/Helm安装.md)
 * [Helm使用](Helm/Helm使用.md)
 * [chart详解](Helm/chart详解.md)
+
