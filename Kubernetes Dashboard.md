@@ -11,6 +11,7 @@ $ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy
 ```
 
 将Service改成NodePort类型，注意 YAML 中最下面的 Service 部分新增一个type=NodePort
+```yaml
 kind: Service
 apiVersion: v1
 metadata:
@@ -25,6 +26,7 @@ spec:
   type: NodePort
   selector:
     k8s-app: kubernetes-dashboard
+```yaml
 
 ```bash
 $ kubectl create -f kubernetes-dashboard.yaml
