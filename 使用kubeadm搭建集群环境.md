@@ -192,6 +192,8 @@ $ update-alternatives --set ebtables /usr/sbin/ebtables-legacy
 
 ### 3.6 配置kubelet的cgroup drive
 
+参考：https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
+
 确保docker 的cgroup drive 和kubelet的cgroup drive一样：
 
 ```bash
